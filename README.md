@@ -232,6 +232,10 @@ flowchart LR
 hk-waste-classification-system/
 ├── frontend/          # Next.js application
 ├── backend/           # FastAPI application
+│   ├── app/          # Application code
+│   ├── data/         # Seed data
+│   │   └── seed_examples.json  # RAG seed examples (21 examples)
+│   └── chroma_db/    # Vector database (generated)
 ├── docker-compose.yml
 └── README.md
 ```
