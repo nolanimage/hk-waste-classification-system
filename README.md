@@ -211,7 +211,7 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    SeedData[Seed Examples<br/>JSON File] --> Embed[Generate Embeddings<br/>sentence-transformers]
+    SeedData[Seed Examples<br/>backend/data/seed_examples.json] --> Embed[Generate Embeddings<br/>sentence-transformers]
     Embed --> Store[Store in ChromaDB<br/>Vector Database]
     
     UserQuery[User Query] --> QueryEmbed[Generate Query Embedding]
