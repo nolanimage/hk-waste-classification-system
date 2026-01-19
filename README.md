@@ -255,6 +255,15 @@ We welcome contributions! Fork the repository, create a feature branch, make you
 
 **Areas for contribution**: Classification accuracy, feature development, documentation, bug fixes, performance optimization, UI/UX improvements, testing.
 
+### Branching Strategy
+
+This project uses a branching strategy to separate QA and production environments:
+- **`main`**: Production-ready code
+- **`develop`**: QA/Testing environment
+- **`feature/*`**: Feature development branches
+
+See [.github/BRANCHING_STRATEGY.md](.github/BRANCHING_STRATEGY.md) for detailed workflow.
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
