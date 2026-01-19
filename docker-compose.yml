@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: waste-classification-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - VISION_MODEL=${VISION_MODEL:-qwen/qwen3-vl-32b-instruct}
+      - TEXT_MODEL=${TEXT_MODEL:-qwen/qwen-2.5-7b-instruct}
+      - ITEM_DETECTION_MODEL=${ITEM_DETECTION_MODEL:-qwen/qwen-2.5-72b-instruct}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-all-MiniLM-L6-v2}
+      - CHROMA_DB_PATH=/app/chroma_db
+      - PORT=8000
+    volumes:
+      - ./backend/chroma_db:/app/chroma_db
+      - ./backend/data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: waste-classification-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped

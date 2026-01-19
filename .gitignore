@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+.next/
+out/
+build/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.pid
+*.seed
+*.pid.lock
+
+# Vector DB
+chroma_db/
+*.db
+*.sqlite
+
+# Temporary files
+*.tmp
+*.temp
+uploads/
+temp/
+
+# Development and testing files
+IMPROVEMENTS.md
+TESTING.md
+WEBAPP_TEST_RESULTS.md
+test_api.py
+test_webapp.sh
+backend/test_venv/

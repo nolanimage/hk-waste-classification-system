@@ -1,0 +1,170 @@
+[
+  {
+    "item_name": "Aluminum soda can",
+    "text_description": "a crumpled aluminum soda can",
+    "category": "metal",
+    "bin_color": "yellow",
+    "bin_type": "Yellow bin (aluminum/metal cans)",
+    "rules": "Must be empty and clean. Remove any labels if possible."
+  },
+  {
+    "item_name": "Plastic water bottle",
+    "text_description": "a clear plastic water bottle",
+    "category": "plastic",
+    "bin_color": "brown",
+    "bin_type": "Brown bin (plastic bottles)",
+    "rules": "Must be empty and clean. Remove cap if it's a different material."
+  },
+  {
+    "item_name": "Newspaper",
+    "text_description": "old newspapers",
+    "category": "paper",
+    "bin_color": "blue",
+    "bin_type": "Blue bin (waste paper)",
+    "rules": "Must be dry and clean. No food contamination."
+  },
+  {
+    "item_name": "Cardboard box",
+    "text_description": "a cardboard shipping box",
+    "category": "paper",
+    "bin_color": "blue",
+    "bin_type": "Blue bin (waste paper)",
+    "rules": "Flatten before recycling. Remove any tape or plastic labels."
+  },
+  {
+    "item_name": "Glass bottle",
+    "text_description": "a glass wine bottle",
+    "category": "glass",
+    "bin_color": "green",
+    "bin_type": "GREEN@COMMUNITY (glass bottles)",
+    "rules": "Must be empty and clean. Take to GREEN@COMMUNITY recycling point."
+  },
+  {
+    "item_name": "Battery",
+    "text_description": "used AA battery",
+    "category": "hazardous",
+    "bin_color": "green",
+    "bin_type": "GREEN@COMMUNITY (batteries)",
+    "rules": "Do not put in regular bins. Take to GREEN@COMMUNITY for proper disposal."
+  },
+  {
+    "item_name": "Food scraps",
+    "text_description": "leftover food waste",
+    "category": "organic",
+    "bin_color": "other",
+    "bin_type": "Food waste bin",
+    "rules": "Separate from recyclables. Use designated food waste collection if available."
+  },
+  {
+    "item_name": "Metal can (food)",
+    "text_description": "empty metal food can",
+    "category": "metal",
+    "bin_color": "yellow",
+    "bin_type": "Yellow bin (aluminum/metal cans)",
+    "rules": "Must be empty and clean. Rinse if necessary."
+  },
+  {
+    "item_name": "Plastic container",
+    "text_description": "plastic food container",
+    "category": "plastic",
+    "bin_color": "brown",
+    "bin_type": "Brown bin (plastic bottles)",
+    "rules": "Only plastic bottles go in brown bin. Other plastic containers may need to go to GREEN@COMMUNITY."
+  },
+  {
+    "item_name": "Magazine",
+    "text_description": "old magazine",
+    "category": "paper",
+    "bin_color": "blue",
+    "bin_type": "Blue bin (waste paper)",
+    "rules": "Must be dry. Remove any plastic covers or bindings."
+  },
+  {
+    "item_name": "Tetra Pak carton",
+    "text_description": "milk or juice carton",
+    "category": "paper",
+    "bin_color": "green",
+    "bin_type": "GREEN@COMMUNITY (cartons)",
+    "rules": "Take to GREEN@COMMUNITY recycling point. Rinse and flatten."
+  },
+  {
+    "item_name": "Electronic device",
+    "text_description": "old mobile phone or small electronic device",
+    "category": "hazardous",
+    "bin_color": "green",
+    "bin_type": "GREEN@COMMUNITY (electronics)",
+    "rules": "Do not put in regular bins. Take to GREEN@COMMUNITY for proper e-waste recycling."
+  },
+  {
+    "item_name": "Styrofoam container",
+    "text_description": "styrofoam takeout container",
+    "category": "general",
+    "bin_color": "other",
+    "bin_type": "General waste",
+    "rules": "Styrofoam is not recyclable in Hong Kong. Dispose in general waste bin."
+  },
+  {
+    "item_name": "Plastic bag",
+    "text_description": "single-use plastic bag",
+    "category": "general",
+    "bin_color": "other",
+    "bin_type": "General waste",
+    "rules": "Most plastic bags are not recyclable. Reuse if possible, otherwise general waste."
+  },
+  {
+    "item_name": "Coffee cup (disposable)",
+    "text_description": "disposable coffee cup",
+    "category": "general",
+    "bin_color": "other",
+    "bin_type": "General waste",
+    "rules": "Disposable coffee cups with plastic lining are not recyclable. Use general waste."
+  },
+  {
+    "item_name": "Metal wire hanger",
+    "text_description": "metal clothes hanger",
+    "category": "metal",
+    "bin_color": "yellow",
+    "bin_type": "Yellow bin (aluminum/metal cans)",
+    "rules": "Metal items can go in yellow bin if they fit. Large items may need GREEN@COMMUNITY."
+  },
+  {
+    "item_name": "Office paper",
+    "text_description": "white office paper",
+    "category": "paper",
+    "bin_color": "blue",
+    "bin_type": "Blue bin (waste paper)",
+    "rules": "Must be clean and dry. Remove staples if possible."
+  },
+  {
+    "item_name": "Aluminum foil",
+    "text_description": "used aluminum foil",
+    "category": "metal",
+    "bin_color": "yellow",
+    "bin_type": "Yellow bin (aluminum/metal cans)",
+    "rules": "Must be clean. If contaminated with food, it goes to general waste."
+  },
+  {
+    "item_name": "Plastic bottle with cap",
+    "text_description": "plastic drink bottle with cap",
+    "category": "plastic",
+    "bin_color": "brown",
+    "bin_type": "Brown bin (plastic bottles)",
+    "rules": "Remove cap if it's a different material. Empty and rinse the bottle."
+  },
+  {
+    "item_name": "Broken glass",
+    "text_description": "broken glass pieces",
+    "category": "glass",
+    "bin_color": "green",
+    "bin_type": "GREEN@COMMUNITY (glass)",
+    "rules": "Wrap in newspaper for safety. Take to GREEN@COMMUNITY recycling point."
+  },
+  {
+    "item_name": "Contaminated paper",
+    "text_description": "paper with food stains or grease",
+    "category": "general",
+    "bin_color": "other",
+    "bin_type": "General waste",
+    "rules": "Contaminated paper cannot be recycled. Must go to general waste."
+  }
+]
