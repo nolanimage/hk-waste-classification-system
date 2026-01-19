@@ -158,12 +158,29 @@ rm -rf backend/chroma_db && docker-compose up -d             # Reset
 curl http://localhost:8000/health
 ```
 
-### Enriching the Vector Database
+### Content Filtering
 
-The system comes with 21 seed examples. To improve classification accuracy, consider enriching the vector database:
+The system includes content filtering to ensure only appropriate waste-related inputs are processed:
+- Blocks inappropriate content (human body, sexual content, violence, drugs)
+- Validates that inputs are waste-related
+- Sanitizes text inputs
+- Returns clear error messages for invalid inputs
+
+### Auto-Enrichment
+
+The system automatically enriches the vector database with high-confidence classifications (confidence ≥ 0.85):
+- Checks for duplicates before adding
+- Only adds non-generic items
+- Improves system accuracy over time
+- Configurable via environment variables (`AUTO_ENRICH_ENABLED`, `AUTO_ENRICH_CONFIDENCE_THRESHOLD`)
+
+### Manual Enrichment
+
+The system comes with 21 seed examples. To manually enrich the vector database:
 
 - **Update seed data**: Add more examples to `backend/data/seed_examples.json` and re-seed
 - **Use Admin API**: Add examples dynamically via `POST /api/admin/add-example`
+- **View statistics**: Get database statistics via `GET /api/admin/statistics`
 - **Focus areas**: More examples for plastics, GREEN@COMMUNITY items, edge cases, and Hong Kong-specific items
 
 ## Troubleshooting
@@ -181,7 +198,10 @@ The system comes with 21 seed examples. To improve classification accuracy, cons
 
 ```mermaid
 flowchart TD
-    Start([User Input]) --> InputType{Input Type?}
+    Start([User Input]) --> ContentFilter[Content Filter Service<br/>Validate & Sanitize Input<br/>Block Inappropriate Content]
+    
+    ContentFilter -->|Invalid| Reject[Reject Request<br/>400 Bad Request]
+    ContentFilter -->|Valid| InputType{Input Type?}
     
     InputType -->|Text| TextInput[Text Description]
     InputType -->|Image| ImageInput[Image Upload]
@@ -189,7 +209,7 @@ flowchart TD
     TextInput --> TextSplitter[Text Splitter Service<br/>LLM: Detect multiple items<br/>+ associated components]
     TextSplitter --> TextItems[Item Descriptions]
     
-    ImageInput --> ImageDetector[Image Detector Service<br/>Vision Model: Detect objects<br/>+ bounding boxes]
+    ImageInput --> ImageDetector[Image Detector Service<br/>Vision Model: Detect objects<br/>+ bounding boxes + masks]
     ImageDetector --> ImageItems[Detected Objects]
     
     TextItems --> EmbedGen1[Generate Embedding<br/>sentence-transformers]
@@ -200,20 +220,28 @@ flowchart TD
     
     RAGQuery --> RAGResults[Retrieved Examples]
     
-    RAGResults --> LLMClassify{Classification}
+    RAGResults --> LLMClassify{Classification<br/>with Material Recognition}
     TextItems --> LLMClassify
     ImageItems --> LLMClassify
     
-    LLMClassify -->|Text| TextLLM[Text Model<br/>OpenRouter API]
-    LLMClassify -->|Image| VisionLLM[Vision Model<br/>OpenRouter API]
+    LLMClassify -->|Text| TextLLM[Text Model<br/>OpenRouter API<br/>+ Material Identification]
+    LLMClassify -->|Image| VisionLLM[Vision Model<br/>OpenRouter API<br/>+ Material Identification]
     
     TextLLM --> Results[Classification Results]
     VisionLLM --> Results
     
-    Results --> Aggregate[Aggregate Results<br/>Multi-Item Response]
-    Aggregate --> Output([Response:<br/>Items, Bins, Explanations])
+    Results --> AutoEnrich{Auto-Enrichment?<br/>High Confidence}
+    AutoEnrich -->|Yes| AddToDB[Add to ChromaDB<br/>Enrich Vector Database]
+    AutoEnrich -->|No| Aggregate
+    AddToDB --> Aggregate
+    
+    Aggregate[Aggregate Results<br/>Multi-Item Response] --> Output([Response:<br/>Items, Bins, Explanations<br/>Material Info])
     
     style Start fill:#e1f5ff
+    style ContentFilter fill:#fff3cd
+    style Reject fill:#f8d7da
+    style AutoEnrich fill:#d1ecf1
+    style AddToDB fill:#d1ecf1
     style Output fill:#d4edda
     style RAGQuery fill:#fff3cd
     style LLMClassify fill:#f8d7da
@@ -223,18 +251,29 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    SeedData[Seed Examples<br/>backend/data/seed_examples.json] --> Embed[Generate Embeddings<br/>sentence-transformers]
+    SeedData[Seed Examples<br/>backend/data/seed_examples.json<br/>21 initial examples] --> Embed[Generate Embeddings<br/>sentence-transformers]
     Embed --> Store[Store in ChromaDB<br/>Vector Database]
     
     UserQuery[User Query] --> QueryEmbed[Generate Query Embedding]
-    QueryEmbed --> Similarity[Vector Similarity Search]
+    QueryEmbed --> Similarity[Vector Similarity Search<br/>Cosine Distance<br/>Top-K = 5]
     Store --> Similarity
     Similarity --> TopK[Top-K Similar Examples]
-    TopK --> LLMPrompt[Augment LLM Prompt]
+    TopK --> LLMPrompt[Include in LLM Prompt<br/>Few-Shot Learning<br/>Material Recognition]
     LLMPrompt --> BetterResult[Improved Classification]
     
-    style Store fill:#fff3cd
-    style Similarity fill:#d1ecf1
+    Classification[LLM Classification] --> CheckConf{High Confidence?<br/>≥ 0.85}
+    CheckConf -->|Yes| CheckDup{Duplicate?<br/>Similarity Check}
+    CheckConf -->|No| Skip[Skip Auto-Enrichment]
+    CheckDup -->|No| AutoAdd[Auto-Enrichment<br/>Add to Database]
+    CheckDup -->|Yes| Skip
+    AutoAdd --> Store
+    
+    style SeedData fill:#e1f5ff
+    style Store fill:#d4edda
+    style TopK fill:#fff3cd
+    style AutoAdd fill:#d1ecf1
+    style CheckConf fill:#d1ecf1
+    style CheckDup fill:#d1ecf1
     style BetterResult fill:#d4edda
 ```
 
