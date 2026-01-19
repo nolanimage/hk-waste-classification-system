@@ -76,8 +76,16 @@ curl -X POST http://localhost:8000/api/classify \
       "category": "metal",
       "bin": "Yellow bin (aluminum/metal cans)",
       "binColor": "yellow",
-      "explanation": "Aluminum cans should be placed in the yellow bin...",
-      "confidence": 0.95
+      "explanation": "Aluminum cans should be placed in the yellow bin for metal recycling. Must be empty and clean.",
+      "confidence": null
+    },
+    {
+      "item": "Plastic water bottle",
+      "category": "plastic",
+      "bin": "Brown bin (plastic bottles)",
+      "binColor": "brown",
+      "explanation": "Plastic bottles should be placed in the brown bin for plastic recycling. Must be empty and clean.",
+      "confidence": null
     }
   ],
   "total_items": 2,
