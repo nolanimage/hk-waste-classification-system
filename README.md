@@ -194,9 +194,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## Acknowledgments
 
 - Hong Kong Environmental Protection Department for official guidelines
-- OpenRouter for LLM API infrastructure
-- ChromaDB for vector database
-- sentence-transformers for local embeddings
 
 ## References
 
