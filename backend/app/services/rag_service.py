@@ -134,6 +134,50 @@ class RAGService:
         
         return similar_examples
     
+    def check_duplicate(
+        self,
+        text_description: str,
+        similarity_threshold: float = 0.95
+    ) -> bool:
+        """
+        Check if a similar example already exists in the database.
+        
+        Args:
+            text_description: Text description to check
+            similarity_threshold: Minimum similarity to consider a duplicate (0.0-1.0)
+                                Lower values = more strict (0.95 means 95% similar)
+        
+        Returns:
+            True if a duplicate exists, False otherwise
+        """
+        try:
+            # Generate embedding for the description
+            text_embedding = embedding_service.generate_text_embedding(text_description)
+            
+            # Query for similar items (check top 5)
+            results = self.collection.query(
+                query_embeddings=[text_embedding],
+                n_results=5
+            )
+            
+            # Check if any result is very similar (distance < threshold)
+            # ChromaDB uses cosine distance: 0 = identical, 1 = completely different
+            # We convert similarity threshold to distance: distance = 1 - similarity
+            distance_threshold = 1.0 - similarity_threshold
+            
+            if results['ids'] and len(results['ids'][0]) > 0:
+                for i in range(len(results['ids'][0])):
+                    distance = results['distances'][0][i] if 'distances' in results else 1.0
+                    if distance <= distance_threshold:
+                        # Found a very similar example
+                        return True
+            
+            return False
+        except Exception as e:
+            print(f"Error checking for duplicate: {e}")
+            # On error, assume no duplicate (safer to add than skip)
+            return False
+    
     def get_all_examples(self) -> List[Dict[str, Any]]:
         """Get all examples from the database (for admin purposes)."""
         results = self.collection.get()

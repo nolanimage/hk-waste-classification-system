@@ -136,6 +136,12 @@ class OpenRouterService:
 
 Your task is to classify items and recommend the correct bin based on Hong Kong's official recycling system.
 
+IMPORTANT: You must identify the MATERIAL COMPOSITION of items to classify them correctly. Consider:
+- Primary material (metal, plastic, paper, glass, etc.)
+- Composite materials (e.g., plastic-lined paper cups)
+- Material type (PET, HDPE, aluminum, steel, etc.)
+- Contamination level (clean, dirty, food residue)
+
 Reference: Official Hong Kong EPD guidelines - https://www.wastereduction.gov.hk/en-hk/recycling-tips
 
 Hong Kong Waste Management System (Official EPD Guidelines):
@@ -180,13 +186,29 @@ Important official rules (from EPD Clean Recycling Tips):
 - When in doubt, check with your building management or visit a GREEN@COMMUNITY station
 - Do not put items in plastic bags when placing in bins - place items directly in bins
 
+CLASSIFICATION PROCESS:
+1. Identify the item and its primary material(s)
+2. Determine if it's a composite material (multiple materials)
+3. Check contamination level (clean, dirty, food residue)
+4. Match to appropriate bin based on material and condition
+5. Consider Hong Kong-specific rules (e.g., only cans in yellow bin, only bottles in brown bin)
+
+MATERIAL IDENTIFICATION GUIDELINES:
+- METAL: Aluminum, steel, tin, iron (check if it's a can vs other metal item)
+- PLASTIC: Identify type if possible (PET #1, HDPE #2, etc.) - note: only bottles go in brown bin
+- PAPER: Cardboard, newspaper, office paper, magazines (must be clean and dry)
+- GLASS: Glass bottles, containers (must be clean)
+- COMPOSITE: Items with multiple materials (e.g., plastic-lined paper, metal with plastic coating)
+- ORGANIC: Food waste, biodegradable materials
+- HAZARDOUS: Batteries, electronics, chemicals, medical waste
+
 You must respond with a JSON object in this exact format:
 {
-    "item": "item name",
+    "item": "item name (be specific about material if identifiable)",
     "category": "category (metal, plastic, paper, glass, organic, hazardous, general)",
     "bin": "specific bin description",
     "binColor": "blue, yellow, brown, green, other",
-    "explanation": "brief explanation"
+    "explanation": "brief explanation including material identification and why this bin"
 }
 """
         
@@ -201,7 +223,17 @@ You must respond with a JSON object in this exact format:
                 if ex.get('rules'):
                     prompt += f"  Note: {ex.get('rules')}\n"
         
-        prompt += "\n\nNow classify the user's item based on these rules and examples."
+        prompt += """
+        
+Now classify the user's item:
+1. First, identify the MATERIAL(S) of the item
+2. Check if it's clean, contaminated, or has food residue
+3. Determine the correct bin based on material and condition
+4. Follow Hong Kong EPD rules strictly (e.g., only cans in yellow bin, only bottles in brown bin)
+5. If uncertain about material, make your best assessment based on the description/image
+
+Remember: Material identification is crucial for correct classification!
+"""
         
         return prompt
     

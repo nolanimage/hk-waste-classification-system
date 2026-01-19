@@ -37,6 +37,7 @@ class ClassificationResult(BaseModel):
     explanation: str = Field(..., description="Explanation of the classification")
     confidence: Optional[float] = Field(None, description="Confidence score for image detections")
     bbox: Optional[dict] = Field(None, description="Bounding box coordinates for image items")
+    mask: Optional[dict] = Field(None, description="Segmentation mask coordinates (polygon) for precise object boundaries")
     
     class Config:
         json_schema_extra = {

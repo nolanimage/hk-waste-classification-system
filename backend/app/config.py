@@ -25,6 +25,11 @@ class Settings:
     # RAG Settings
     RAG_TOP_K: int = 5  # Number of similar examples to retrieve
     
+    # Auto-enrichment settings
+    AUTO_ENRICH_ENABLED: bool = True  # Enable automatic enrichment of vector DB
+    AUTO_ENRICH_CONFIDENCE_THRESHOLD: float = 0.85  # Minimum confidence to auto-add (0.0-1.0)
+    AUTO_ENRICH_CHECK_DUPLICATES: bool = True  # Check for duplicates before adding
+    
     @property
     def openrouter_base_url(self) -> str:
         """OpenRouter API base URL."""

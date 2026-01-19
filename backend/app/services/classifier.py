@@ -10,6 +10,8 @@ from app.models.classification import (
     ClassificationResult,
     MultiClassificationResponse
 )
+from app.models.rag import RAGExample
+from app.config import settings
 
 
 class ClassifierService:
@@ -111,7 +113,7 @@ class ClassifierService:
                         examples=similar_examples
                     )
                     
-                    classification_results.append(ClassificationResult(
+                    result = ClassificationResult(
                         item=classification_result.get("item", "Unknown item"),
                         category=classification_result.get("category", "general"),
                         bin=classification_result.get("bin", "General waste"),
@@ -119,7 +121,12 @@ class ClassifierService:
                         explanation=classification_result.get("explanation", "Classification completed."),
                         confidence=None,
                         bbox=None
-                    ))
+                    )
+                    
+                    classification_results.append(result)
+                    
+                    # Auto-enrichment: Add high-confidence classifications to RAG database
+                    self._auto_enrich_if_qualified(result, item_text)
                 except Exception as e:
                     print(f"Error classifying item '{item_text}': {e}")
                     # Continue with other items
@@ -131,7 +138,7 @@ class ClassifierService:
             
             if not detections:
                 # Fallback to single item classification
-                detections = [{"description": "item in image", "bbox": None, "confidence": 0.5}]
+                detections = [{"description": "item in image", "bbox": None, "mask": None, "confidence": 0.5}]
             
             # Get image size for cropping
             image_size = image_detector_service.get_image_size(image_base64)
@@ -139,13 +146,14 @@ class ClassifierService:
             # Classify each detected object
             for detection in detections:
                 try:
-                    # Crop image if bounding box is available
+                    # Crop image if bounding box is available (with optional segmentation mask)
                     cropped_image = None
                     if detection.get("bbox"):
                         cropped_image = image_detector_service.crop_image(
                             image_base64,
                             detection["bbox"],
-                            image_size
+                            image_size,
+                            mask=detection.get("mask")  # Pass segmentation mask if available
                         )
                     
                     # Use cropped image if available, otherwise use original
@@ -168,15 +176,21 @@ class ClassifierService:
                         examples=similar_examples
                     )
                     
-                    classification_results.append(ClassificationResult(
+                    result = ClassificationResult(
                         item=classification_result.get("item", "Unknown item"),
                         category=classification_result.get("category", "general"),
                         bin=classification_result.get("bin", "General waste"),
                         binColor=classification_result.get("binColor", "other"),
                         explanation=classification_result.get("explanation", "Classification completed."),
                         confidence=detection.get("confidence"),
-                        bbox={"coordinates": detection.get("bbox")} if detection.get("bbox") else None
-                    ))
+                        bbox={"coordinates": detection.get("bbox")} if detection.get("bbox") else None,
+                        mask={"coordinates": detection.get("mask")} if detection.get("mask") else None
+                    )
+                    
+                    classification_results.append(result)
+                    
+                    # Auto-enrichment: Add high-confidence classifications to RAG database
+                    self._auto_enrich_if_qualified(result, description)
                 except Exception as e:
                     print(f"Error classifying detected object: {e}")
                     # Continue with other items
@@ -199,6 +213,67 @@ class ClassifierService:
             total_items=len(classification_results),
             input_type=input_type
         )
+    
+    def _auto_enrich_if_qualified(
+        self,
+        result: ClassificationResult,
+        description: str
+    ) -> None:
+        """
+        Automatically add high-confidence classifications to RAG database.
+        
+        Args:
+            result: Classification result
+            description: Original text description or detected item description
+        """
+        # Check if auto-enrichment is enabled
+        if not settings.AUTO_ENRICH_ENABLED:
+            return
+        
+        # Check confidence threshold (if confidence is available)
+        if result.confidence is not None:
+            if result.confidence < settings.AUTO_ENRICH_CONFIDENCE_THRESHOLD:
+                return  # Confidence too low, skip
+        
+        # Skip if item is too generic
+        if result.item.lower() in ["unknown item", "item in image", "general waste"]:
+            return
+        
+        # Skip if category is too generic
+        if result.category.lower() == "general" and result.binColor == "other":
+            return
+        
+        try:
+            # Check for duplicates if enabled
+            if settings.AUTO_ENRICH_CHECK_DUPLICATES:
+                # Create a description for duplicate checking
+                check_description = f"{result.item} - {description}".strip()
+                if rag_service.check_duplicate(check_description, similarity_threshold=0.90):
+                    print(f"Auto-enrichment: Skipping duplicate for '{result.item}'")
+                    return
+            
+            # Generate embedding for the description
+            text_description = f"{result.item} - {description}".strip()
+            text_embedding = embedding_service.generate_text_embedding(text_description)
+            
+            # Create RAG example
+            rag_example = RAGExample(
+                item_name=result.item,
+                text_description=text_description,
+                text_embedding=text_embedding,
+                category=result.category,
+                bin_color=result.binColor,
+                bin_type=result.bin,
+                rules=result.explanation
+            )
+            
+            # Add to database
+            example_id = rag_service.add_example(rag_example)
+            print(f"Auto-enrichment: Added '{result.item}' to RAG database (ID: {example_id})")
+            
+        except Exception as e:
+            # Don't fail the classification if enrichment fails
+            print(f"Auto-enrichment: Failed to add '{result.item}': {e}")
 
 
 # Global instance

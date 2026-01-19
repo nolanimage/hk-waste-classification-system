@@ -6,6 +6,7 @@ from app.models.classification import (
     MultiClassificationResponse
 )
 from app.services.classifier import classifier_service
+from app.services.content_filter import content_filter_service
 
 router = APIRouter(prefix="/api", tags=["classification"])
 
@@ -31,10 +32,24 @@ async def classify_item(request: ClassificationRequest) -> MultiClassificationRe
     if has_image and has_text:
         raise HTTPException(status_code=400, detail="Please provide either image OR text, not both")
     
+    # Content filtering: Validate input for appropriateness
+    is_valid, error_message = content_filter_service.validate_input(
+        text=request.text if has_text else None,
+        image_base64=request.image if has_image else None
+    )
+    
+    if not is_valid:
+        raise HTTPException(status_code=400, detail=error_message or "Invalid input content")
+    
+    # Sanitize text input if provided
+    sanitized_text = None
+    if has_text and request.text:
+        sanitized_text = content_filter_service.sanitize_text(request.text)
+    
     try:
         result = await classifier_service.classify_multiple(
             image_base64=request.image if has_image else None,
-            text=request.text if has_text else None
+            text=sanitized_text if has_text else None
         )
         return result
     except ValueError as e:

@@ -7,7 +7,10 @@ An enterprise-grade multimodal AI application that classifies waste items accord
 - **Dual Input Modes**: Text descriptions or image uploads
 - **Multi-Item Detection**: Automatic identification and classification of multiple items
 - **Context-Aware**: Intelligent detection of associated items (packaging, instructions, containers)
+- **Material Recognition**: LLM identifies material composition for accurate classification
+- **Content Filtering**: Validates inputs and blocks inappropriate content
 - **RAG-Enhanced**: Vector similarity search improves classification accuracy
+- **Auto-Enrichment**: High-confidence classifications automatically added to knowledge base
 - **EPD Compliant**: Fully aligned with Hong Kong official waste management guidelines
 
 ## Tech Stack
