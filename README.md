@@ -165,11 +165,66 @@ curl http://localhost:8000/health
 
 ## Architecture
 
-**Text Flow**: User input → Item detection → Embedding generation → RAG retrieval → LLM classification → Aggregated results
+### System Flow
 
-**Image Flow**: Image upload → Object detection → Image cropping → Embedding generation → RAG retrieval → Vision model classification → Results with bounding boxes
+```mermaid
+flowchart TD
+    Start([User Input]) --> InputType{Input Type?}
+    
+    InputType -->|Text| TextInput[Text Description]
+    InputType -->|Image| ImageInput[Image Upload]
+    
+    TextInput --> TextSplitter[Text Splitter Service<br/>LLM: Detect multiple items<br/>+ associated components]
+    TextSplitter --> TextItems[Item Descriptions]
+    
+    ImageInput --> ImageDetector[Image Detector Service<br/>Vision Model: Detect objects<br/>+ bounding boxes]
+    ImageDetector --> ImageItems[Detected Objects]
+    
+    TextItems --> EmbedGen1[Generate Embedding<br/>sentence-transformers]
+    ImageItems --> EmbedGen2[Generate Embedding<br/>sentence-transformers]
+    
+    EmbedGen1 --> RAGQuery[Query ChromaDB<br/>Vector Similarity Search<br/>Top-K Examples]
+    EmbedGen2 --> RAGQuery
+    
+    RAGQuery --> RAGResults[Retrieved Examples]
+    
+    RAGResults --> LLMClassify{Classification}
+    TextItems --> LLMClassify
+    ImageItems --> LLMClassify
+    
+    LLMClassify -->|Text| TextLLM[Text Model<br/>OpenRouter API]
+    LLMClassify -->|Image| VisionLLM[Vision Model<br/>OpenRouter API]
+    
+    TextLLM --> Results[Classification Results]
+    VisionLLM --> Results
+    
+    Results --> Aggregate[Aggregate Results<br/>Multi-Item Response]
+    Aggregate --> Output([Response:<br/>Items, Bins, Explanations])
+    
+    style Start fill:#e1f5ff
+    style Output fill:#d4edda
+    style RAGQuery fill:#fff3cd
+    style LLMClassify fill:#f8d7da
+```
 
-**RAG System**: ChromaDB stores examples, sentence-transformers generates embeddings, top-K similarity search retrieves relevant examples for LLM prompts.
+### RAG System Flow
+
+```mermaid
+flowchart LR
+    SeedData[Seed Examples<br/>JSON File] --> Embed[Generate Embeddings<br/>sentence-transformers]
+    Embed --> Store[Store in ChromaDB<br/>Vector Database]
+    
+    UserQuery[User Query] --> QueryEmbed[Generate Query Embedding]
+    QueryEmbed --> Similarity[Vector Similarity Search]
+    Store --> Similarity
+    Similarity --> TopK[Top-K Similar Examples]
+    TopK --> LLMPrompt[Augment LLM Prompt]
+    LLMPrompt --> BetterResult[Improved Classification]
+    
+    style Store fill:#fff3cd
+    style Similarity fill:#d1ecf1
+    style BetterResult fill:#d4edda
+```
 
 ## Project Structure
 
