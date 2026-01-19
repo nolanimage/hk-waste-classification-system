@@ -154,6 +154,14 @@ rm -rf backend/chroma_db && docker-compose up -d             # Reset
 curl http://localhost:8000/health
 ```
 
+### Enriching the Vector Database
+
+The system comes with 21 seed examples. To improve classification accuracy, consider enriching the vector database:
+
+- **Update seed data**: Add more examples to `backend/data/seed_examples.json` and re-seed
+- **Use Admin API**: Add examples dynamically via `POST /api/admin/add-example`
+- **Focus areas**: More examples for plastics, GREEN@COMMUNITY items, edge cases, and Hong Kong-specific items
+
 ## Troubleshooting
 
 - **UI not updating**: Hard refresh (Cmd+Shift+R / Ctrl+Shift+R)
