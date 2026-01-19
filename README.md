@@ -117,7 +117,8 @@ Separate collection points for: glass bottles, electronics, batteries, beverage 
 
 **References:**
 - [EPD Recycling Tips](https://www.wastereduction.gov.hk/en-hk/recycling-tips)
-- [Clean Recycling Tips PDF](https://www.wastereduction.gov.hk/sites/default/files/one-stop-shop/1_Pager_on_Clean_Recycling_Tips.pdf)
+- [EPD Clean Recycling Tips PDF](https://www.wastereduction.gov.hk/sites/default/files/one-stop-shop/1_Pager_on_Clean_Recycling_Tips.pdf)
+- [EPD Recycling Map](https://www.wastereduction.gov.hk/en-hk/recycling-map) - Interactive map with 9,200+ recycling points (Note: No public API available)
 
 ## Configuration
 
