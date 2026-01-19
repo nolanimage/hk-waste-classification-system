@@ -194,8 +194,3 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ## Acknowledgments
 
 - Hong Kong Environmental Protection Department for official guidelines
-
-## References
-
-- [Hong Kong EPD Recycling Guidelines](https://www.wastereduction.gov.hk/en-hk/recycling-tips)
-- [EPD Clean Recycling Tips PDF](https://www.wastereduction.gov.hk/sites/default/files/one-stop-shop/1_Pager_on_Clean_Recycling_Tips.pdf)
